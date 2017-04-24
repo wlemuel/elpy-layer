@@ -42,8 +42,12 @@
     ))
 
 (defun elpy/post-init-company ()
-  (spacemacs|add-company-hook inferior-python-mode)
-  (push 'company-capf company-backends-inferior-python-mode)
+  ;; (spacemacs|add-company-hook inferior-python-mode)
+  ;; (push 'company-capf company-backends-inferior-python-mode)
+
+  (spacemacs|add-company-backends :backends company-capf
+                                  :modes inferior-python-mode)
+
   (add-hook 'inferior-python-mode-hook
             (lambda ()
               (setq-local company-minimum-prefix-length 0)
