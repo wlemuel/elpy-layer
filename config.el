@@ -13,3 +13,17 @@
 ;; (spacemacs|defvar-company-backends python-mode)
 ;; (spacemacs|defvar-company-backends inferior-python-mode)
 ;; (spacemacs|defvar-company-backends pip-requirements-mode)
+
+;; (spacemacs|define-jump-handlers python-mode)
+
+(defvar python-enable-yapf-format-on-save nil
+  "If non-nil, automatically format code with YAPF on save.")
+
+(defvar python-fill-column 79
+  "Fill column value for python buffers")
+
+(defvar python-tab-width 4
+  "Tab width value for python buffers")
+
+(defvar python-sort-imports-on-save nil
+  "If non-nil, automatically sort imports on save.")

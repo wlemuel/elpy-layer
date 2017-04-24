@@ -17,7 +17,10 @@
       '(
         company
         elpy
+        evil-matchit
         flycheck
+        py-isort
+        yapfify
         ))
 
 (setq elpy-excluded-packages '())
@@ -39,21 +42,103 @@
       (add-to-list 'elpy-modules 'elpy-module-yasnippet))
 
     (elpy-enable)
+
+    (defun spacemacs/python-execute-file (arg)
+      "Execute a python script in a shell."
+      (interactive "P")
+      ;; set compile command to buffer-file-name
+      ;; universal argument put compile buffer in comint mode
+      (let ((universal-argument t)
+            (compile-command (format "python %s" (file-name-nondirectory
+                                                  buffer-file-name))))
+        (if arg
+            (call-interactively 'compile)
+          (compile compile-command t)
+          (with-current-buffer (get-buffer "*compilation*")
+            (inferior-python-mode)))))
+
+    (defun spacemacs/python-execute-file-focus (arg)
+      "Execute a python script in a shell and switch to the shell buffer in
+`insert state'."
+      (interactive "P")
+      (spacemacs/python-execute-file arg)
+      (switch-to-buffer-other-window "*compilation*")
+      (end-of-buffer)
+      (evil-insert-state))
+
+    ;; (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
+    ;; (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
+    (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mh" "help")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mg" "goto")
+    (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mt" "test")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mr" "refactor")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyenv")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mV" "pyvenv")
+    (spacemacs/set-leader-keys-for-major-mode 'python-mode
+      "'" 'elpy-shell-switch-to-shell
+      ;; "cc" 'spacemacs/python-execute-file
+      ;; "cC" 'spacemacs/python-execute-file-focus
+      "ec" 'elpy-check
+      ;; "en" 'elpy-flymake-next-error
+      ;; "ep" 'elpy-flymake-previous-error
+      ;; "el" 'elpy-flymake-show-error
+      ;; "ee" 'elpy-flymake-error-at-point
+      "gg" 'elpy-goto-definition
+      "gG" 'elpy-goto-definition-other-window
+      "gl" 'elpy-goto-location
+      "go" 'elpy-occur-definitions
+      "hh" 'elpy-doc
+      "pf" 'elpy-find-file
+      "pc" 'elpy-django-command
+      "pr" 'elpy-django-runserver
+      "re" 'elpy-multiedit-python-symbol-at-point
+      "rf" 'elpy-format-code
+      "ri" 'elpy-importmagic-fixup
+      "rr" 'elpy-refactor
+      "sb" 'elpy-shell-send-region-or-buffer
+      "sf" 'python-shell-send-defun
+      "si" 'python-start-or-switch-repl
+      "sk" 'elpy-shell-kill
+      "sr" 'elpy-shell-send-region-or-buffer
+      "tt" 'elpy-test
+      )
+
     ))
 
 (defun elpy/post-init-company ()
-  ;; (spacemacs|add-company-hook inferior-python-mode)
-  ;; (push 'company-capf company-backends-inferior-python-mode)
-
   (spacemacs|add-company-backends :backends company-capf
-                                  :modes inferior-python-mode)
-
-  (add-hook 'inferior-python-mode-hook
-            (lambda ()
-              (setq-local company-minimum-prefix-length 0)
-              (setq-local company-idle-delay 0.5)))
+                                  :modes inferior-python-mode
+                                  :variables
+                                  company-minimum-prefix-length 0
+                                  company-idle-delay 0.5)
   )
+
+(defun elpy/post-init-evil-matchit ()
+  (add-hook `python-mode-hook `turn-on-evil-matchit-mode))
 
 (defun elpy/post-init-flycheck ()
   (add-hook 'elpy-mode-hook 'flycheck-mode)
   )
+
+(defun elpy/init-py-isort ()
+  (use-package py-isort
+    :defer t
+    :init
+    (progn
+      (add-hook 'before-save-hook 'spacemacs//python-sort-imports)
+      (spacemacs/set-leader-keys-for-major-mode 'python-mode
+        "rI" 'py-isort-buffer))))
+
+(defun elpy/init-yapfify ()
+  (use-package yapfify
+    :defer t
+    :init
+    (progn
+      (spacemacs/set-leader-keys-for-major-mode 'python-mode
+        "=" 'yapfify-buffer)
+      (when python-enable-yapf-format-on-save
+        (add-hook 'python-mode-hook 'yapf-mode)))
+    :config (spacemacs|hide-lighter yapf-mode)))
