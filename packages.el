@@ -75,8 +75,7 @@
     (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
     (spacemacs/declare-prefix-for-mode 'python-mode "mt" "test")
     (spacemacs/declare-prefix-for-mode 'python-mode "mr" "refactor")
-    (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyenv")
-    (spacemacs/declare-prefix-for-mode 'python-mode "mV" "pyvenv")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyvenv")
     (spacemacs/set-leader-keys-for-major-mode 'python-mode
       "'" 'elpy-shell-switch-to-shell
       ;; "cc" 'spacemacs/python-execute-file
@@ -104,6 +103,10 @@
       "sk" 'elpy-shell-kill
       "sr" 'elpy-shell-send-region-or-buffer
       "tt" 'elpy-test
+      "va" 'pyvenv-activate
+      "vd" 'pyvenv-deactivate
+      "vw" 'pyvenv-workon
+      "vr" 'pyvenv-restart-python
       )
 
     ))
