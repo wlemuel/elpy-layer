@@ -99,7 +99,7 @@
       "rr" 'elpy-refactor
       "sb" 'elpy-shell-send-region-or-buffer
       "sf" 'python-shell-send-defun
-      "si" 'python-start-or-switch-repl
+      ;; "si" 'python-start-or-switch-repl
       "sk" 'elpy-shell-kill
       "sr" 'elpy-shell-send-region-or-buffer
       "tt" 'elpy-test
