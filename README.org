@@ -1,9 +1,9 @@
-#+TITLE: Elpy contribution layer for Spacemacs
+#+TITLE: Elpy contribution layer for Spacemacs(Develop)
 
 * Table of Contents                                                      :TOC@4:
  - [[#description][Description]]
  - [[#install][Install]]
-     - [[#layer][Layer]]
+   - [[#layer][Layer]]
 
 * Description
 
