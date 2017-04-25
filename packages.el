@@ -19,6 +19,7 @@
         elpy
         evil-matchit
         flycheck
+        pony-mode
         py-isort
         yapfify
         ))
@@ -67,11 +68,12 @@
       (evil-insert-state))
 
     ;; (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
-    ;; (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
+    (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
     (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
     (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
     (spacemacs/declare-prefix-for-mode 'python-mode "mh" "help")
     (spacemacs/declare-prefix-for-mode 'python-mode "mg" "goto")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mj" "pony")
     (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
     (spacemacs/declare-prefix-for-mode 'python-mode "mt" "test")
     (spacemacs/declare-prefix-for-mode 'python-mode "mr" "refactor")
@@ -80,12 +82,13 @@
       "'" 'elpy-shell-switch-to-shell
       ;; "cc" 'spacemacs/python-execute-file
       ;; "cC" 'spacemacs/python-execute-file-focus
+      "db" 'spacemacs/python-toggle-breakpoint
       "ec" 'elpy-check
       ;; "en" 'elpy-flymake-next-error
       ;; "ep" 'elpy-flymake-previous-error
       ;; "el" 'elpy-flymake-show-error
       ;; "ee" 'elpy-flymake-error-at-point
-      "gg" 'elpy-goto-definition
+      "gg" 'spacemacs/elpy-goto-definition
       "gG" 'elpy-goto-definition-other-window
       "gl" 'elpy-goto-location
       "go" 'elpy-occur-definitions
@@ -93,6 +96,7 @@
       "pf" 'elpy-find-file
       "pc" 'elpy-django-command
       "pr" 'elpy-django-runserver
+      "pi" 'spacemacs/python-remove-unused-imports
       "re" 'elpy-multiedit-python-symbol-at-point
       "rf" 'elpy-format-code
       "ri" 'elpy-importmagic-fixup
@@ -125,6 +129,47 @@
 (defun elpy/post-init-flycheck ()
   (add-hook 'elpy-mode-hook 'flycheck-mode)
   )
+
+(defun elpy/init-pony-mode ()
+  (use-package pony-mode
+    :defer t
+    :init (progn
+            (spacemacs/set-leader-keys-for-major-mode 'python-mode
+              ; d*j*ango f*a*bric
+              "jaf" 'pony-fabric
+              "jad" 'pony-fabric-deploy
+              ; d*j*ango *f*iles
+              "jfs" 'pony-goto-settings
+              "jfc" 'pony-setting
+              "jft" 'pony-goto-template
+              "jfr" 'pony-resolve
+              ; d*j*ango *i*nteractive
+              "jid" 'pony-db-shell
+              "jis" 'pony-shell
+              ; d*j*ango *m*anage
+              ; not including one-off management commands like "flush" and
+              ; "startapp" even though they're implemented in pony-mode,
+              ; because this is much handier
+              "jm" 'pony-manage
+              ; d*j*ango *r*unserver
+              "jrd" 'pony-stopserver
+              "jro" 'pony-browser
+              "jrr" 'pony-restart-server
+              "jru" 'pony-runserver
+              "jrt" 'pony-temp-server
+              ; d*j*ango *s*outh/*s*yncdb
+              "jsc" 'pony-south-convert
+              "jsh" 'pony-south-schemamigration
+              "jsi" 'pony-south-initial
+              "jsm" 'pony-south-migrate
+              "jss" 'pony-syncdb
+              ; d*j*ango *t*est
+              "jtd" 'pony-test-down
+              "jte" 'pony-test-goto-err
+              "jto" 'pony-test-open
+              "jtt" 'pony-test
+              "jtu" 'pony-test-up))))
+
 
 (defun elpy/init-py-isort ()
   (use-package py-isort
