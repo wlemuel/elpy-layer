@@ -21,6 +21,7 @@
         flycheck
         pony-mode
         py-isort
+        pygen
         yapfify
         ))
 
@@ -72,6 +73,7 @@
     (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
     (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
     (spacemacs/declare-prefix-for-mode 'python-mode "mh" "help")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mi" "pygen")
     (spacemacs/declare-prefix-for-mode 'python-mode "mg" "goto")
     (spacemacs/declare-prefix-for-mode 'python-mode "mj" "pony")
     (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
@@ -179,6 +181,24 @@
       (add-hook 'before-save-hook 'spacemacs//python-sort-imports)
       (spacemacs/set-leader-keys-for-major-mode 'python-mode
         "rI" 'py-isort-buffer))))
+
+(defun elpy/init-pygen ()
+  (use-package pygen
+    :defer t
+    :init
+    (progn
+      (add-hook 'python-mode-hook 'pygen-mode)
+      (spacemacs/set-leader-keys-for-major-mode 'python-mode
+        "ic" 'pygen-generate-class
+        "if" 'pygen-generate-function
+        "ik" 'pygen-make-keyword-argument
+        "isa" 'pygen-make-sequence-argument
+        "isf" 'pygen-generate-static-function
+        "iss" 'pygen-insert-super
+        "ist" 'pygen-toggle-selfify-symbol
+        "iv" 'pygen-extract-variable
+        "i@" 'pygen-add-decorator-to-function
+        ))))
 
 (defun elpy/init-yapfify ()
   (use-package yapfify
