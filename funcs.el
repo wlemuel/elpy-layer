@@ -62,3 +62,65 @@
   (condition-case ex
       (elpy-goto-definition)
     ('error (message (format "%s" ex)))))
+
+(defun spacemacs/python-shell-send-buffer-switch ()
+  " Send buffer content to shell and switch to it in insert mode."
+  (interactive)
+  (elpy-shell-send-region-or-buffer)
+  (elpy-shell-switch-to-shell)
+  (evil-insert-state))
+
+(defun spacemacs/python-shell-send-defun-switch ()
+  "Send function content to shell and switch to it in insert mode."
+  (interactive)
+  (python-shell-send-defun nil)
+  (elpy-shell-switch-to-shell)
+  (evil-insert-state))
+
+(defun spacemacs/python-start-or-switch-repl ()
+  " Switch to shell in insert mode."
+  (interactive)
+  (python-shell-switch-to-shell)
+  (evil-insert-state))
+
+(defun spacemacs/elpy-start-or-switch-repl ()
+  " Switch to elpy shell in insert mode."
+  (interactive)
+  (elpy-shell-switch-to-shell)
+  (evil-insert-state))
+
+(defun spacemacs/python-test-and-switch ()
+  " Run tests and switch to test-buffer."
+  (interactive)
+  (elpy-test)
+  (switch-to-buffer-other-window "*compilation*"))
+
+(defun spacemacs/python-shell-send-region-switch (start end)
+  " Send region content to shell and switch to it in insert mode."
+  (interactive "r")
+  (python-shell-send-region start end)
+  (python-shell-switch-to-shell)
+  (evil-insert-state))
+
+(defun spacemacs/python-execute-file (arg)
+  "Execute a python script in a shell."
+  (interactive "P")
+  ;; set compile command to buffer-file-name
+  ;; universal argument put compile buffer in comint mode
+  (let ((universal-argument t)
+        (compile-command (format "python %s" (file-name-nondirectory
+                                              buffer-file-name))))
+    (if arg
+        (call-interactively 'compile)
+      (compile compile-command t)
+      (with-current-buffer (get-buffer "*compilation*")
+        (inferior-python-mode)))))
+
+(defun spacemacs/python-execute-file-focus (arg)
+  "Execute a python script in a shell and switch to the shell buffer in
+`insert state'."
+  (interactive "P")
+  (spacemacs/python-execute-file arg)
+  (switch-to-buffer-other-window "*compilation*")
+  (end-of-buffer)
+  (evil-insert-state))

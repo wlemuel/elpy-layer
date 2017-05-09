@@ -19,9 +19,11 @@
         elpy
         evil-matchit
         flycheck
+        ;; (nose :location local)
         pony-mode
         py-isort
         pygen
+        (pylookup :location local)
         yapfify
         ))
 
@@ -45,30 +47,7 @@
 
     (elpy-enable)
 
-    (defun spacemacs/python-execute-file (arg)
-      "Execute a python script in a shell."
-      (interactive "P")
-      ;; set compile command to buffer-file-name
-      ;; universal argument put compile buffer in comint mode
-      (let ((universal-argument t)
-            (compile-command (format "python %s" (file-name-nondirectory
-                                                  buffer-file-name))))
-        (if arg
-            (call-interactively 'compile)
-          (compile compile-command t)
-          (with-current-buffer (get-buffer "*compilation*")
-            (inferior-python-mode)))))
-
-    (defun spacemacs/python-execute-file-focus (arg)
-      "Execute a python script in a shell and switch to the shell buffer in
-`insert state'."
-      (interactive "P")
-      (spacemacs/python-execute-file arg)
-      (switch-to-buffer-other-window "*compilation*")
-      (end-of-buffer)
-      (evil-insert-state))
-
-    ;; (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
     (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
     (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
     (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
@@ -81,7 +60,7 @@
     (spacemacs/declare-prefix-for-mode 'python-mode "mr" "refactor")
     (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyvenv")
     (spacemacs/set-leader-keys-for-major-mode 'python-mode
-      "'" 'elpy-shell-switch-to-shell
+      "'" 'spacemacs/elpy-start-or-switch-repl
       ;; "cc" 'spacemacs/python-execute-file
       ;; "cC" 'spacemacs/python-execute-file-focus
       "db" 'spacemacs/python-toggle-breakpoint
@@ -105,10 +84,10 @@
       "rr" 'elpy-refactor
       "sb" 'elpy-shell-send-region-or-buffer
       "sf" 'python-shell-send-defun
-      ;; "si" 'python-start-or-switch-repl
+      "si" 'spacemacs/python-start-or-switch-repl
       "sk" 'elpy-shell-kill
       "sr" 'elpy-shell-send-region-or-buffer
-      "tt" 'elpy-test
+      "tt" 'spacemacs/python-test-and-switch
       "va" 'pyvenv-activate
       "vd" 'pyvenv-deactivate
       "vw" 'pyvenv-workon
@@ -131,6 +110,22 @@
 (defun elpy/post-init-flycheck ()
   (add-hook 'elpy-mode-hook 'flycheck-mode)
   )
+
+;; (defun elpy/init-nose ()
+;;   (use-package nose
+;;     :commands (nosetests-one
+;;                nosetests-pdb-one
+;;                nosetests-all
+;;                nosetests-pdb-all
+;;                nosetests-module
+;;                nosetests-pdb-module
+;;                nosetests-suite
+;;                nosetests-pdb-suite)
+;;     ;; :init (spacemacs//bind-python-testing-keys)
+;;     :config
+;;     (progn
+;;       (add-to-list 'nose-project-root-files "setup.cfg")
+;;       (setq nose-use-verbose nil))))
 
 (defun elpy/init-pony-mode ()
   (use-package pony-mode
@@ -199,6 +194,23 @@
         "iv" 'pygen-extract-variable
         "i@" 'pygen-add-decorator-to-function
         ))))
+
+(defun elpy/init-pylookup ()
+  (use-package pylookup
+    :commands (pylookup-lookup pylookup-update pylookup-update-all)
+    :init
+    (progn
+      (evilified-state-evilify pylookup-mode pylookup-mode-map)
+      (spacemacs/set-leader-keys-for-major-mode 'python-mode
+        "hH" 'pylookup-lookup))
+    :config
+    (progn
+      (let ((dir (configuration-layer/get-layer-local-dir 'elpy)))
+        (setq pylookup-dir (concat dir "pylookup/")
+              pylookup-program (concat pylookup-dir "pylookup.bat")
+              pylookup-db-file (concat pylookup-dir "pylookup.db")))
+      (setq pylookup-completing-read 'completing-read))))
+
 
 (defun elpy/init-yapfify ()
   (use-package yapfify
