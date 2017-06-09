@@ -41,11 +41,18 @@
                          elpy-module-eldoc
                          elpy-module-pyvenv))
 
-    (when (configuration-layer/layer-usedp 'auto-completion)
-      (add-to-list 'elpy-modules 'elpy-module-company)
-      (add-to-list 'elpy-modules 'elpy-module-yasnippet))
+    ;; (when (configuration-layer/layer-usedp 'auto-completion)
+    ;;   (add-to-list 'elpy-modules 'elpy-module-company)
+    ;;   (add-to-list 'elpy-modules 'elpy-module-yasnippet))
 
+    (setq elpy-modules (delq 'elpy-model-company elpy-modules))
     (elpy-enable)
+
+    (add-hook 'python-mode-hook
+              (lambda ()
+                (company-mode)
+                (add-to-list 'company-backends
+                             (company-mode/backend-with-yas 'elpy-company-backend))))
 
     (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
     (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
