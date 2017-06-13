@@ -113,11 +113,12 @@
     ))
 
 (defun elpy/post-init-company ()
-  (spacemacs|add-company-backends :backends company-capf
-                                  :modes inferior-python-mode
-                                  :variables
-                                  company-minimum-prefix-length 0
-                                  company-idle-delay 0.5)
+  (spacemacs|add-company-backends
+    :backends (company-capf company-files)
+    :modes inferior-python-mode
+    :variables
+    company-minimum-prefix-length 0
+    company-idle-delay 0.5)
   )
 
 (defun elpy/post-init-evil-matchit ()
