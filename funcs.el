@@ -63,6 +63,10 @@
       (elpy-goto-definition)
     ('error (message (format "%s" ex)))))
 
+(defun spacemacs/elpy-go-back ()
+  (interactive)
+  (xref-pop-marker-stack))
+
 (defun spacemacs/python-shell-send-buffer-switch ()
   " Send buffer content to shell and switch to it in insert mode."
   (interactive)

@@ -37,15 +37,23 @@
     ;; Elpy removes the modeline lighters. Let's override this
     (defun elpy-modules-remove-modeline-lighter (mode-name))
 
+    ;; (setq elpy-modules '(elpy-module-sane-defaults
+    ;;                      elpy-module-eldoc
+    ;;                      elpy-module-pyvenv))
     (setq elpy-modules '(elpy-module-sane-defaults
+                         ;; elpy-module-company
                          elpy-module-eldoc
-                         elpy-module-pyvenv))
+                         elpy-module-flymake
+                         elpy-module-highlight-indentation
+                         elpy-module-pyvenv
+                         ;; elpy-module-yasnippet
+                         elpy-module-django))
 
     ;; (when (configuration-layer/layer-usedp 'auto-completion)
     ;;   (add-to-list 'elpy-modules 'elpy-module-company)
     ;;   (add-to-list 'elpy-modules 'elpy-module-yasnippet))
 
-    (setq elpy-modules (delq 'elpy-model-company elpy-modules))
+    ;; (setq elpy-modules (delq 'elpy-model-company elpy-modules))
     (elpy-enable)
 
     (add-hook 'python-mode-hook
@@ -76,6 +84,7 @@
       ;; "ep" 'elpy-flymake-previous-error
       ;; "el" 'elpy-flymake-show-error
       ;; "ee" 'elpy-flymake-error-at-point
+      "gb" 'spacemacs/elpy-go-back
       "gg" 'spacemacs/elpy-goto-definition
       "gG" 'elpy-goto-definition-other-window
       "gl" 'elpy-goto-location
