@@ -16,6 +16,7 @@
 (setq elpy-packages
       '(
         company
+        cython-mode
         elpy
         evil-matchit
         flycheck
@@ -24,6 +25,7 @@
         py-isort
         pygen
         (pylookup :location local)
+        pytest
         yapfify
         ))
 
@@ -76,9 +78,9 @@
     (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyvenv")
     (spacemacs/set-leader-keys-for-major-mode 'python-mode
       "'" 'spacemacs/elpy-start-or-switch-repl
-      ;; "cc" 'spacemacs/python-execute-file
-      ;; "cC" 'spacemacs/python-execute-file-focus
-      "db" 'spacemacs/python-toggle-breakpoint
+      "cc" 'spacemacs/elpy-execute-file
+      "cC" 'spacemacs/elpy-execute-file-focus
+      "db" 'spacemacs/elpy-toggle-breakpoint
       "ec" 'elpy-check
       ;; "en" 'elpy-flymake-next-error
       ;; "ep" 'elpy-flymake-previous-error
@@ -93,17 +95,18 @@
       "pf" 'elpy-find-file
       "pc" 'elpy-django-command
       "pr" 'elpy-django-runserver
-      "pi" 'spacemacs/python-remove-unused-imports
+      "pi" 'spacemacs/elpy-remove-unused-imports
       "re" 'elpy-multiedit-python-symbol-at-point
       "rf" 'elpy-format-code
       "ri" 'elpy-importmagic-fixup
+      "rp" 'spacemacs/elpy-remove-unused-imports
       "rr" 'elpy-refactor
       "sb" 'elpy-shell-send-region-or-buffer
       "sf" 'python-shell-send-defun
       "si" 'spacemacs/python-start-or-switch-repl
       "sk" 'elpy-shell-kill
       "sr" 'elpy-shell-send-region-or-buffer
-      "tt" 'spacemacs/python-test-and-switch
+      ;; "tt" 'spacemacs/python-test-and-switch
       "va" 'pyvenv-activate
       "vd" 'pyvenv-deactivate
       "vw" 'pyvenv-workon
@@ -120,6 +123,14 @@
     company-minimum-prefix-length 0
     company-idle-delay 0.5)
   )
+
+(defun elpy/init-cython-mode ()
+  (use-package cython-mode
+    :defer t
+    :init
+    (progn
+      (spacemacs/set-leader-keys-for-major-mode 'cython-mode
+        "hh" 'elpy-doc))))
 
 (defun elpy/post-init-evil-matchit ()
   (add-hook `python-mode-hook `turn-on-evil-matchit-mode))
@@ -190,7 +201,7 @@
     :defer t
     :init
     (progn
-      (add-hook 'before-save-hook 'spacemacs//python-sort-imports)
+      (add-hook 'before-save-hook 'spacemacs//elpy-sort-imports)
       (spacemacs/set-leader-keys-for-major-mode 'python-mode
         "rI" 'py-isort-buffer))))
 
@@ -228,6 +239,16 @@
               pylookup-db-file (concat pylookup-dir "pylookup.db")))
       (setq pylookup-completing-read 'completing-read))))
 
+(defun elpy/init-pytest ()
+  (use-package pytest
+    :commands (pytest-one
+              pytest-pdb-one
+              pytest-all
+              pytest-pdb-all
+              pytest-module
+              pytest-pdb-module)
+    :init (spacemacs//bind-elpy-testing-keys)
+    :config (add-to-list 'pytest-project-root-files "setup.cfg")))
 
 (defun elpy/init-yapfify ()
   (use-package yapfify
