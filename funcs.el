@@ -165,7 +165,8 @@
         (call-interactively 'compile)
       (compile compile-command t)
       (with-current-buffer (get-buffer "*compilation*")
-        (inferior-python-mode)))))
+        (inferior-python-mode)
+        (evil-normal-state)))))
 
 (defun spacemacs/elpy-execute-file-focus (arg)
   "Execute a python script in a shell and switch to the shell buffer in
