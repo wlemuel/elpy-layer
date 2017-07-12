@@ -21,6 +21,7 @@
         evil-matchit
         flycheck
         ;; (nose :location local)
+        nose
         pony-mode
         py-isort
         pygen
@@ -93,8 +94,8 @@
       "go" 'elpy-occur-definitions
       "hh" 'elpy-doc
       "pf" 'elpy-find-file
-      "pc" 'elpy-django-command
-      "pr" 'elpy-django-runserver
+      "pc" 'spacemacs/elpy-django-command
+      "pr" 'spacemacs/elpy-django-runserver
       "pi" 'spacemacs/elpy-remove-unused-imports
       "re" 'elpy-multiedit-python-symbol-at-point
       "rf" 'elpy-format-code
@@ -139,21 +140,21 @@
   (add-hook 'elpy-mode-hook 'flycheck-mode)
   )
 
-;; (defun elpy/init-nose ()
-;;   (use-package nose
-;;     :commands (nosetests-one
-;;                nosetests-pdb-one
-;;                nosetests-all
-;;                nosetests-pdb-all
-;;                nosetests-module
-;;                nosetests-pdb-module
-;;                nosetests-suite
-;;                nosetests-pdb-suite)
-;;     ;; :init (spacemacs//bind-python-testing-keys)
-;;     :config
-;;     (progn
-;;       (add-to-list 'nose-project-root-files "setup.cfg")
-;;       (setq nose-use-verbose nil))))
+(defun elpy/init-nose ()
+  (use-package nose
+    :commands (nosetests-one
+               nosetests-pdb-one
+               nosetests-all
+               nosetests-pdb-all
+               nosetests-module
+               nosetests-pdb-module
+               nosetests-suite
+               nosetests-pdb-suite)
+    ;; :init (spacemacs//bind-python-testing-keys)
+    :config
+    (progn
+      (add-to-list 'nose-project-root-files "setup.cfg")
+      (setq nose-use-verbose nil))))
 
 (defun elpy/init-pony-mode ()
   (use-package pony-mode

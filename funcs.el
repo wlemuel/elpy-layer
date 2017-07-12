@@ -180,25 +180,25 @@
 (defun spacemacs/elpy-test-all (arg)
   "Run all tests."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((pytest . pytest-all)
+  (spacemacs//elpy-call-correct-test-function arg '((pytest . pytest-all)
                                            (nose . nosetests-all))))
 
 (defun spacemacs/elpy-test-pdb-all (arg)
   "Run all tests in debug mode."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((pytest . pytest-pdb-all)
+  (spacemacs//elpy-call-correct-test-function arg '((pytest . pytest-pdb-all)
                                            (nose . nosetests-pdb-all))))
 
 (defun spacemacs/elpy-test-module (arg)
   "Run all tests in the current module."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((pytest . pytest-module)
+  (spacemacs//elpy-call-correct-test-function arg '((pytest . pytest-module)
                                            (nose . nosetests-module))))
 
 (defun spacemacs/elpy-test-pdb-module (arg)
   "Run all tests in the current module in debug mode."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function
+  (spacemacs//elpy-call-correct-test-function
    arg
    '((pytest . pytest-pdb-module)
      (nose . nosetests-pdb-module))))
@@ -206,23 +206,23 @@
 (defun spacemacs/elpy-test-suite (arg)
   "Run all tests in the current suite."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((nose . nosetests-suite))))
+  (spacemacs//elpy-call-correct-test-function arg '((nose . nosetests-suite))))
 
 (defun spacemacs/elpy-test-pdb-suite (arg)
   "Run all tests in the current suite in debug mode."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((nose . nosetests-pdb-suite))))
+  (spacemacs//elpy-call-correct-test-function arg '((nose . nosetests-pdb-suite))))
 
 (defun spacemacs/elpy-test-one (arg)
   "Run current test."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((pytest . pytest-one)
+  (spacemacs//elpy-call-correct-test-function arg '((pytest . pytest-one)
                                            (nose . nosetests-one))))
 
 (defun spacemacs/elpy-test-pdb-one (arg)
   "Run current test in debug mode."
   (interactive "P")
-  (spacemacs//python-call-correct-test-function arg '((pytest . pytest-pdb-one)
+  (spacemacs//elpy-call-correct-test-function arg '((pytest . pytest-pdb-one)
                                            (nose . nosetests-pdb-one))))
 
 (defun spacemacs//bind-elpy-testing-keys ()
@@ -262,3 +262,67 @@ to be called for each testrunner. "
         (funcall (cdr (assoc test-runner funcalist)))
       (user-error "This test function is not available with the `%S' runner."
                   test-runner))))
+
+(defun spacemacs//elpy-django--get-commands ()
+  "Return list of django commands."
+  (let ((dj-commands-str nil)
+        (help-output
+         (shell-command-to-string
+          (format "%s %s -h"
+                  (spacemacs/pyenv-executable-find python-shell-interpreter)
+                  elpy-django-command))))
+    (setq dj-commands-str
+          (with-temp-buffer
+            (progn
+              (insert help-output)
+              (goto-char (point-min))
+              (delete-region (point) (search-forward "Available subcommands:" nil nil nil))
+              ;; cleanup [auth] and stuff
+              (goto-char (point-min))
+              (save-excursion
+                (replace-regexp "\\[.*\\]" ""))
+              (buffer-string))))
+    ;; get a list of commands from the output of manage.py -h
+    ;; What would be the pattern to optimize this ?
+    (setq dj-commands-str (split-string dj-commands-str "\n"))
+    (setq dj-commands-str (-remove (lambda (x) (string= x "")) dj-commands-str))
+    (setq dj-commands-str (mapcar (lambda (x) (s-trim x)) dj-commands-str))
+    (sort dj-commands-str 'string-lessp)))
+
+(defun spacemacs/elpy-django-command (cmd)
+  "Prompt user for Django command. If called with `C-u',
+it will prompt for other flags/arguments to run."
+  (interactive (list (completing-read "Command: "
+                                      (spacemacs//elpy-django--get-commands) nil nil)))
+  ;; Called with C-u, variable is set or is a cmd that requires an argument
+  (when (or current-prefix-arg
+            elpy-django-always-prompt
+            (member cmd elpy-django-commands-with-req-arg))
+    (setq cmd (concat cmd " " (read-shell-command (concat cmd ": ")))))
+  (compile (format "%s %s %s"
+                   (spacemacs/pyenv-executable-find python-shell-interpreter)
+                   elpy-django-command
+                   cmd)))
+
+(defun spacemacs/elpy-django-runserver (arg)
+  "Start the server and automatically add the ipaddr and port.
+Also create it's own special buffer so that we can have multiple
+servers running per project.
+
+When called with a prefix (C-u), it will prompt for additional args."
+  (interactive "P")
+  (let* ((cmd (format "%s %s %s"
+                      (spacemacs/pyenv-executable-find python-shell-interpreter)
+                      elpy-django-command
+                      elpy-django-server-command))
+         (proj-root (file-name-base (directory-file-name (elpy-project-root))))
+         (buff-name (format "*runserver[%s]*" proj-root)))
+    ;; Kill any previous instance of runserver since we might be doing something new
+    (when (get-buffer buff-name)
+      (kill-buffer buff-name))
+    (setq cmd (concat cmd " " elpy-django-server-ipaddr ":" elpy-django-server-port))
+    (when (or arg elpy-django-always-prompt)
+      (setq cmd (concat cmd " "(read-shell-command (concat cmd ": ")))))
+    (compile cmd)
+    (with-current-buffer "*compilation*"
+      (rename-buffer buff-name))))
