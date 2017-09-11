@@ -24,6 +24,7 @@
         ;; nose
         ob-ipython
         pony-mode
+        ;; py-autopep8
         py-isort
         pygen
         (pylookup :location local)
@@ -145,6 +146,14 @@
   (add-hook 'elpy-mode-hook 'flycheck-mode)
   )
 
+(defun elpy/init-live-py-mode ()
+  (use-package live-py-mode
+    :defer t
+    :commands live-py-mode
+    :init
+    (spacemacs/set-leader-keys-for-major-mode 'python-mode
+      "l" 'live-py-mode)))
+
 (defun elpy/init-nose ()
   (use-package nose
     :commands (nosetests-one
@@ -204,6 +213,13 @@
               "jto" 'pony-test-open
               "jtt" 'pony-test
               "jtu" 'pony-test-up))))
+
+;; (defun elpy/post-init-py-autopep8 ()
+;;   (use-package py-autopep8
+;;     :defer t
+;;     :init
+;;     (progn
+;;       (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))))
 
 
 (defun elpy/init-py-isort ()
