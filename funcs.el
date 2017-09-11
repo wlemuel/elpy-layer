@@ -111,7 +111,7 @@
 
 (defun spacemacs/elpy-go-back ()
   (interactive)
-  (xref-pop-marker-stack))
+  (pop-tag-mark))
 
 (defun spacemacs/elpy-shell-send-buffer-switch ()
   " Send buffer content to shell and switch to it in insert mode."

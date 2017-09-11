@@ -20,13 +20,15 @@
         elpy
         evil-matchit
         flycheck
-        ;; (nose :location local)
-        nose
+        (nose :location local)
+        ;; nose
+        ob-ipython
         pony-mode
         py-isort
         pygen
         (pylookup :location local)
         pytest
+        ;; realgud
         yapfify
         ))
 
@@ -35,6 +37,9 @@
 (defun elpy/init-elpy ()
   (use-package elpy
     :diminish elpy-mode
+    :init
+    (progn
+      (spacemacs/register-repl 'python 'spacemacs/elpy-start-or-switch-repl "python"))
     :config
 
     ;; Elpy removes the modeline lighters. Let's override this
@@ -156,6 +161,10 @@
       (add-to-list 'nose-project-root-files "setup.cfg")
       (setq nose-use-verbose nil))))
 
+(defun elpy/init-ob-ipython ()
+  (use-package ob-ipython
+    :defer t))
+
 (defun elpy/init-pony-mode ()
   (use-package pony-mode
     :defer t
@@ -250,6 +259,37 @@
               pytest-pdb-module)
     :init (spacemacs//bind-elpy-testing-keys)
     :config (add-to-list 'pytest-project-root-files "setup.cfg")))
+
+;; (defun elpy/init-realgud()
+;;   (use-package realgud
+;;     :defer t
+;;     :commands (realgud:pdb realgud:ipdb)
+;;     :init
+;;     (progn
+;;       (setf realgud:pdb-command-name
+;;             (format "%s -m pdb"
+;;                     (spacemacs/pyenv-executable-find python-shell-interpreter)))
+;;       (dolist (mode 'python-mode)
+;;         (spacemacs/set-leader-keys-for-major-mode mode
+;;           "dd" 'realgud:pdb
+;;           "di" 'realgud:ipdb
+;;           "de" 'realgud:cmd-eval-dwim))
+;;       (advice-add 'realgud-short-key-mode-setup
+;;                   :before #'spacemacs//short-key-state)
+;;       (evilified-state-evilify-map realgud:shortkey-mode-map
+;;         :eval-after-load realgud
+;;         :mode realgud-short-key-mode
+;;         :bindings
+;;         "s" 'realgud:cmd-next
+;;         "i" 'realgud:cmd-step
+;;         "b" 'realgud:cmd-break
+;;         "B" 'realgud:cmd-clear
+;;         "o" 'realgud:cmd-finish
+;;         "c" 'realgud:cmd-continue
+;;         "e" 'realgud:cmd-eval
+;;         "r" 'realgud:cmd-restart
+;;         "q" 'realgud:cmd-quit
+;;         "S" 'realgud-window-cmd-undisturb-src))))
 
 (defun elpy/init-yapfify ()
   (use-package yapfify
