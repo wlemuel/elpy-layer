@@ -1,12 +1,26 @@
 ;;; funcs.el --- Elpy Layer functions File for Spacemacs
 
+(defun spacemacs//elpy-default ()
+  "Defaut settings for python buffers"
+  (setq mode-name "Python"
+        tab-width python-tab-width
+        fill-column python-fill-column)
+  (when (version< emacs-version "24.5")
+    ;; auto-indent on colon doesn't work well with if statement
+    ;; should be fixed in 24.5 and above
+    (setq electric-indent-chars (delq ?: electric-indent-chars)))
+  (setq-local comment-inline-offset 2)
+  (spacemacs/elpy-annotate-pdb)
+  ;; make C-j work the same way as RET
+  (local-set-key (kbd "C-j") 'newline-and-indent))
+
 (defun spacemacs/elpy-annotate-pdb ()
   "Highlight break point lines."
   (interactive)
   (highlight-lines-matching-regexp "import \\(pdb\\|ipdb\\|pudb\\|wdb\\)")
   (highlight-lines-matching-regexp "\\(pdb\\|ipdb\\|pudb\\|wdb\\).set_trace()"))
 
-(defun spacemacs/python-setup-shell (&rest args)
+(defun spacemacs//elpy-setup-shell (&rest args)
   (if (spacemacs/pyenv-executable-find "ipython")
       (progn (setq python-shell-interpreter "ipython")
              (if (version< (replace-regexp-in-string "\n$" "" (shell-command-to-string "ipython --version")) "5")
@@ -125,12 +139,6 @@
   (interactive)
   (python-shell-send-defun nil)
   (elpy-shell-switch-to-shell)
-  (evil-insert-state))
-
-(defun spacemacs/python-start-or-switch-repl ()
-  " Switch to shell in insert mode."
-  (interactive)
-  (python-shell-switch-to-shell)
   (evil-insert-state))
 
 (defun spacemacs/elpy-start-or-switch-repl ()
