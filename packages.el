@@ -46,120 +46,88 @@
     :init
     (progn
       (spacemacs/register-repl 'python 'spacemacs/elpy-start-or-switch-repl "python")
-      ;; (add-hook 'inferior-python-mode-hook
-      ;;           #'spacemacs//inferior-python-setup-hook)
       (add-hook 'python-mode-hook #'spacemacs//elpy-default)
       ;; call `spacemacs//python-setup-shell' once, don't put it in a hook
       ;; (see issue #5988)
       (spacemacs//elpy-setup-shell))
     :config
-    (progn
 
-      ;; Elpy removes the modeline lighters. Let's override this
-      (defun elpy-modules-remove-modeline-lighter (mode-name))
+    ;; Elpy removes the modeline lighters. Let's override this
+    (defun elpy-modules-remove-modeline-lighter (mode-name))
 
-      ;; (setq elpy-modules '(elpy-module-sane-defaults
-      ;;                      elpy-module-eldoc
-      ;;                      elpy-module-pyvenv))
-      (setq elpy-modules '(elpy-module-sane-defaults
-                           ;; elpy-module-company
-                           elpy-module-eldoc
-                           ;; elpy-module-flymake
-                           elpy-module-highlight-indentation
-                           elpy-module-pyvenv
-                           ;; elpy-module-yasnippet
-                           elpy-module-django))
+    ;; (setq elpy-modules '(elpy-module-sane-defaults
+    ;;                      elpy-module-eldoc
+    ;;                      elpy-module-pyvenv))
+    (setq elpy-modules '(elpy-module-sane-defaults
+                         ;; elpy-module-company
+                         elpy-module-eldoc
+                         ;; elpy-module-flymake
+                         elpy-module-highlight-indentation
+                         elpy-module-pyvenv
+                         ;; elpy-module-yasnippet
+                         elpy-module-django))
 
-      ;; (when (configuration-layer/layer-usedp 'auto-completion)
-      ;;   (add-to-list 'elpy-modules 'elpy-module-company)
-      ;;   (add-to-list 'elpy-modules 'elpy-module-yasnippet))
+    ;; (when (configuration-layer/layer-usedp 'auto-completion)
+    ;;   (add-to-list 'elpy-modules 'elpy-module-company)
+    ;;   (add-to-list 'elpy-modules 'elpy-module-yasnippet))
 
-      ;; (setq elpy-modules (delq 'elpy-model-company elpy-modules))
-      (elpy-enable)
+    ;; (setq elpy-modules (delq 'elpy-model-company elpy-modules))
+    (elpy-enable)
 
-      (add-hook 'python-mode-hook
-                (lambda ()
-                  (company-mode)
-                  (add-to-list 'company-backends
-                               (company-mode/backend-with-yas 'elpy-company-backend))))
+    (add-hook 'python-mode-hook
+              (lambda ()
+                (company-mode)
+                (add-to-list 'company-backends
+                             (company-mode/backend-with-yas 'elpy-company-backend))))
 
-      ;; add support for `ahs-range-beginning-of-defun' for python-mode
-      (with-eval-after-load 'auto-highlight-symbol
-        (add-to-list 'ahs-plugin-bod-modes 'python-mode))
-
-
-      (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
-      (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
-      (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mh" "help")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mi" "pygen")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mg" "goto")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mj" "pony")
-      (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mt" "test")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mr" "refactor")
-      (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyvenv")
-      (spacemacs/set-leader-keys-for-major-mode 'python-mode
-        "'" 'spacemacs/elpy-start-or-switch-repl
-        "cc" 'spacemacs/elpy-execute-file
-        "cC" 'spacemacs/elpy-execute-file-focus
-        "db" 'spacemacs/elpy-toggle-breakpoint
-        "ec" 'elpy-check
-        ;; "en" 'elpy-flymake-next-error
-        ;; "ep" 'elpy-flymake-previous-error
-        ;; "el" 'elpy-flymake-show-error
-        ;; "ee" 'elpy-flymake-error-at-point
-        "gb" 'spacemacs/elpy-go-back
-        "gg" 'spacemacs/elpy-goto-definition
-        "gG" 'elpy-goto-definition-other-window
-        "gl" 'elpy-goto-location
-        "go" 'elpy-occur-definitions
-        "hh" 'elpy-doc
-        "pf" 'elpy-find-file
-        "pc" 'spacemacs/elpy-django-command
-        "pr" 'spacemacs/elpy-django-runserver
-        "pi" 'spacemacs/elpy-remove-unused-imports
-        "re" 'elpy-multiedit-python-symbol-at-point
-        "rf" 'elpy-format-code
-        "ri" 'elpy-importmagic-fixup
-        "rp" 'spacemacs/elpy-remove-unused-imports
-        "rr" 'elpy-refactor
-        "sb" 'elpy-shell-send-region-or-buffer
-        "sf" 'python-shell-send-defun
-        "si" 'spacemacs/python-start-or-switch-repl
-        "sk" 'elpy-shell-kill
-        "sr" 'elpy-shell-send-region-or-buffer
-        ;; "tt" 'spacemacs/python-test-and-switch
-        "va" 'pyvenv-activate
-        "vd" 'pyvenv-deactivate
-        "vw" 'pyvenv-workon
-        "vr" 'pyvenv-restart-python
-        )
-
-      ;; Emacs users won't need these key bindings
-      ;; TODO: make these key bindings dynamic given the current style
-      ;; Doing it only at init time won't update it if the user switches style
-      ;; Also find a way to generalize these bindings.
-      (when (eq dotspacemacs-editing-style 'vim)
-        ;; the default in Emacs is M-n
-        (define-key inferior-python-mode-map (kbd "C-j") 'comint-next-input)
-        ;; the default in Emacs is M-p and this key binding overrides
-        ;; default C-k which prevents Emacs users to kill line
-        (define-key inferior-python-mode-map (kbd "C-k") 'comint-previous-input)
-        ;; the default in Emacs is M-r; C-r to search backward old output
-        ;; and should not be changed
-        (define-key inferior-python-mode-map
-          (kbd "C-r") 'comint-history-isearch-backward)
-        ;; this key binding is for recentering buffer in Emacs
-        ;; it would be troublesome if Emacs user
-        ;; Vim users can use this key since they have other key
-        (define-key inferior-python-mode-map
-          (kbd "C-l") 'spacemacs/comint-clear-buffer))
-
-      ;; add this optional key binding for Emacs user, since it is unbound
-      (define-key inferior-python-mode-map
-        (kbd "C-c M-l") 'spacemacs/comint-clear-buffer))
+    (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
+    (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
+    (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mh" "help")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mi" "pygen")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mg" "goto")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mj" "pony")
+    (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mt" "test")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mr" "refactor")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mv" "pyvenv")
+    (spacemacs/set-leader-keys-for-major-mode 'python-mode
+      "'" 'spacemacs/elpy-start-or-switch-repl
+      "cc" 'spacemacs/elpy-execute-file
+      "cC" 'spacemacs/elpy-execute-file-focus
+      "db" 'spacemacs/elpy-toggle-breakpoint
+      "ec" 'elpy-check
+      ;; "en" 'elpy-flymake-next-error
+      ;; "ep" 'elpy-flymake-previous-error
+      ;; "el" 'elpy-flymake-show-error
+      ;; "ee" 'elpy-flymake-error-at-point
+      "gb" 'spacemacs/elpy-go-back
+      "gg" 'spacemacs/elpy-goto-definition
+      "gG" 'elpy-goto-definition-other-window
+      "gl" 'elpy-goto-location
+      "go" 'elpy-occur-definitions
+      "hh" 'elpy-doc
+      "pf" 'elpy-find-file
+      "pc" 'spacemacs/elpy-django-command
+      "pr" 'spacemacs/elpy-django-runserver
+      "pi" 'spacemacs/elpy-remove-unused-imports
+      "re" 'elpy-multiedit-python-symbol-at-point
+      "rf" 'elpy-format-code
+      "ri" 'elpy-importmagic-fixup
+      "rp" 'spacemacs/elpy-remove-unused-imports
+      "rr" 'elpy-refactor
+      "sb" 'elpy-shell-send-region-or-buffer
+      "sf" 'python-shell-send-defun
+      "si" 'spacemacs/python-start-or-switch-repl
+      "sk" 'elpy-shell-kill
+      "sr" 'elpy-shell-send-region-or-buffer
+      ;; "tt" 'spacemacs/python-test-and-switch
+      "va" 'pyvenv-activate
+      "vd" 'pyvenv-deactivate
+      "vw" 'pyvenv-workon
+      "vr" 'pyvenv-restart-python
+      )
     ))
 
 (defun elpy/post-init-company ()
