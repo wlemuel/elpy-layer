@@ -42,7 +42,6 @@
 (defun elpy/init-elpy ()
   (use-package elpy
     :diminish elpy-mode
-    :defer t
     :init
     (progn
       (spacemacs/register-repl 'python 'spacemacs/elpy-start-or-switch-repl "python")
