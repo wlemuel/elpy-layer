@@ -23,7 +23,8 @@
         flycheck
         (nose :location local)
         ;; nose
-        ob-ipython
+        ;; ob-ipython
+        org
         pony-mode
         ;; py-autopep8
         py-isort
@@ -54,16 +55,13 @@
     ;; Elpy removes the modeline lighters. Let's override this
     (defun elpy-modules-remove-modeline-lighter (mode-name))
 
-    ;; (setq elpy-modules '(elpy-module-sane-defaults
-    ;;                      elpy-module-eldoc
-    ;;                      elpy-module-pyvenv))
     (setq elpy-modules '(elpy-module-sane-defaults
-                         ;; elpy-module-company
+                         elpy-module-company
                          elpy-module-eldoc
                          ;; elpy-module-flymake
                          elpy-module-highlight-indentation
                          elpy-module-pyvenv
-                         ;; elpy-module-yasnippet
+                         elpy-module-yasnippet
                          elpy-module-django))
 
     ;; (when (configuration-layer/layer-usedp 'auto-completion)
@@ -73,11 +71,11 @@
     ;; (setq elpy-modules (delq 'elpy-model-company elpy-modules))
     (elpy-enable)
 
-    (add-hook 'python-mode-hook
-              (lambda ()
-                (company-mode)
-                (add-to-list 'company-backends
-                             (company-mode/backend-with-yas 'elpy-company-backend))))
+    ;; (add-hook 'python-mode-hook
+    ;;           (lambda ()
+    ;;             (company-mode)
+    ;;             (add-to-list 'company-backends
+    ;;                          (company-mode/backend-with-yas 'elpy-company-backend))))
 
     (spacemacs/declare-prefix-for-mode 'python-mode "mc" "execute")
     (spacemacs/declare-prefix-for-mode 'python-mode "md" "debug")
@@ -183,9 +181,9 @@
       (add-to-list 'nose-project-root-files "setup.cfg")
       (setq nose-use-verbose nil))))
 
-(defun elpy/init-ob-ipython ()
-  (use-package ob-ipython
-    :defer t))
+(defun elpy/pre-init-org ()
+  (spacemacs|use-package-add-hook org
+    :post-config (add-to-list 'org-babel-load-languages '(python . t))))
 
 (defun elpy/init-pony-mode ()
   (use-package pony-mode
