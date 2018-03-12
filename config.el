@@ -10,8 +10,8 @@
 ;;
 ;;; License: GPLv3
 
-;; (spacemacs|defvar-company-backends python-mode)
-;; (spacemacs|defvar-company-backends inferior-python-mode)
+(spacemacs|defvar-company-backends python-mode)
+(spacemacs|defvar-company-backends inferior-python-mode)
 ;; (spacemacs|defvar-company-backends pip-requirements-mode)
 
 ;; (spacemacs|define-jump-handlers python-mode)
