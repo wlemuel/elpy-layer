@@ -19,6 +19,7 @@
         ;; counsel-gtags
         cython-mode
         elpy
+        elpygen
         evil-matchit
         flycheck
         (nose :location local)
@@ -82,7 +83,7 @@
     (spacemacs/declare-prefix-for-mode 'python-mode "me" "errors")
     (spacemacs/declare-prefix-for-mode 'python-mode "mp" "project")
     (spacemacs/declare-prefix-for-mode 'python-mode "mh" "help")
-    (spacemacs/declare-prefix-for-mode 'python-mode "mi" "pygen")
+    (spacemacs/declare-prefix-for-mode 'python-mode "mi" "elpygen")
     (spacemacs/declare-prefix-for-mode 'python-mode "mg" "goto")
     (spacemacs/declare-prefix-for-mode 'python-mode "mj" "pony")
     (spacemacs/declare-prefix-for-mode 'python-mode "ms" "send to REPL")
@@ -126,6 +127,13 @@
       "vr" 'pyvenv-restart-python
       )
     ))
+
+(defun elpy/post-init-elpygen ()
+  (use-package elpygen
+    :init
+    (progn
+      (spacemacs/set-leader-keys-for-major-mode 'python-mode
+        "ii" 'elpygen-implement))))
 
 (defun elpy/post-init-company ()
   (spacemacs|add-company-hook python-mode)
