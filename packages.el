@@ -136,12 +136,13 @@
         "ii" 'elpygen-implement))))
 
 (defun elpy/post-init-company ()
-  (spacemacs|add-company-hook python-mode)
-  (spacemacs|add-company-hook inferior-python-mode)
-  (push '(company-files company-capf) company-backends-inferior-python-mode)
-  (add-hook 'inferior-python-mode-hook (lambda ()
-                                         (setq-local company-minimum-prefix-length 0)
-                                         (setq-local company-idle-delay 0.5))))
+  (spacemacs|add-company-backends
+    :backends (company-capf company-files)
+    :modes inferior-python-mode
+    :variables
+    company-minimum-prefix-length 0
+    company-idle-delay 0.5)
+  )
 
 (defun elpy/post-init-counsel-gtags ()
   (spacemacs/counsel-gtags-define-keys-for-mode 'python-mode))
